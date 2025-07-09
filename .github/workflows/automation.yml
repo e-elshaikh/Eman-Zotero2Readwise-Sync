@@ -2,27 +2,29 @@ name: Zotero to Readwise Sync
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - main
 
 jobs:
   sync:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
+      - name: Check out repository
+        uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.9'
+          python-version: "3.9"
 
       - name: Install dependencies
         run: |
-          pip install zotero2readwise
+          python -m pip install --upgrade pip
+          pip install .
 
-      - name: Run Zotero2Readwise sync
+      - name: Run Zotero2Readwise
+        env:
+          ZOTERO_API_KEY: ${{ secrets.ZOTERO_API_KEY }}
+          READWISE_API_KEY: ${{ secrets.READWISE_API_KEY }}
+          ZOTERO_LIBRARY_ID: ${{ secrets.ZOTERO_LIBRARY_ID }}
+          ZOTERO_LIBRARY_TYPE: ${{ secrets.ZOTERO_LIBRARY_TYPE }}
         run: |
-          python run.py ${{ secrets.READWISE_TOKEN }} ${{ secrets.ZOTERO_KEY }} ${{ secrets.ZOTERO_ID }}
+          python run.py $READWISE_API_KEY $ZOTERO_API_KEY $ZOTERO_LIBRARY_ID --library_type $ZOTERO_LIBRARY_TYPE --include_annotations True --include_notes False
