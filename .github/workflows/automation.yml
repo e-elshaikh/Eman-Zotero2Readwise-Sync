@@ -1,34 +1,28 @@
-name: Sync Zotero to Readwise
+name: Zotero to Readwise Sync
 
 on:
-  workflow_dispatch:        # Enables manual "Run workflow" button
-  schedule:
-    - cron: "0 3 * * 1"      # Scheduled run every Monday at 03:00 UTC
+  workflow_dispatch:
+  push:
+    branches:
+      - main
 
 jobs:
-  zotero-to-readwise:
+  sync:
     runs-on: ubuntu-latest
 
     steps:
-      - name: 🍽️ Checkout the repo
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 1
+      - name: Checkout repo
+        uses: actions/checkout@v3
 
-      - name: 🐍 Set up Python 3.9
-        uses: actions/setup-python@v5
+      - name: Set up Python
+        uses: actions/setup-python@v4
         with:
           python-version: '3.9'
 
-      - name: 💿 Install Zotero2Readwise
-        run: pip install git+https://github.com/e-alizadeh/Zotero2Readwise.git
-
-      - name: 📥 Download the automation script
-        run: curl -sSL https://raw.githubusercontent.com/e-alizadeh/Zotero2Readwise/master/zotero2readwise/run.py -o run.py
-
-      - name: 🚀 Run the Zotero-to-Readwise sync
+      - name: Install dependencies
         run: |
-          python run.py \
-            "${{ secrets.READWISE_TOKEN }}" \
-            "${{ secrets.ZOTERO_KEY }}" \
-            "${{ secrets.ZOTERO_ID }}"
+          pip install zotero2readwise
+
+      - name: Run Zotero2Readwise sync
+        run: |
+          python run.py ${{ secrets.READWISE_TOKEN }} ${{ secrets.ZOTERO_KEY }} ${{ secrets.ZOTERO_ID }}
