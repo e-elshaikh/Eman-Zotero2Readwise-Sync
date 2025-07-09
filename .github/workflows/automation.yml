@@ -1,11 +1,9 @@
-name: Zotero to Readwise Automation
+name: Sync Zotero to Readwise
 
 on:
-  push:
-    branches:
-      - master
+  workflow_dispatch:        # Enable manual "Run workflow" button
   schedule:
-    - cron: "0 3 * * 1" # Runs at 03:00 AM (UTC) every day (Check https://crontab.guru/)
+    - cron: "0 3 * * 1"      # Scheduled run at 03:00 UTC every Monday
 
 jobs:
   zotero-to-readwise-automation:
@@ -25,7 +23,7 @@ jobs:
         run: pip install git+https://github.com/e-alizadeh/Zotero2Readwise.git
 
       - name: 📥 Download the Python script needed for automation
-        run:  curl https://raw.githubusercontent.com/e-alizadeh/Zotero2Readwise/master/zotero2readwise/run.py -o run.py
-      
+        run: curl https://raw.githubusercontent.com/e-alizadeh/Zotero2Readwise/master/zotero2readwise/run.py -o run.py
+
       - name: 🚀 Run Automation
         run: python run.py ${{ secrets.READWISE_TOKEN }} ${{ secrets.ZOTERO_KEY }} ${{ secrets.ZOTERO_ID }}
